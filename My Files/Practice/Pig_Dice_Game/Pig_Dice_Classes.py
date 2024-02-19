@@ -4,7 +4,7 @@ from random import randint
 
 @dataclass
 class Die:
-    value: int = 1
+    value: int = 0
 
     def roll(self):
         self.value = randint(1, 6)
@@ -17,44 +17,48 @@ class Die:
 @dataclass
 class Game:
     __turn: int = 1
-    __turnScore: int = 0
-    __isTurnOver: bool = False
-    __totalScore: int = 0
-    __isGameOver: bool = False
     __die: Die = field(default_factory=Die)
+    __isGameOver: bool = False
+    __isTurnOver: bool = False
+    __score: int = 0
+    __turnScore: int = 0
 
     def play(self):
         while not self.__isGameOver:
             self.take_turn()
 
     def take_turn(self):
-        print("TURN ", self.__turn)
-        while True:
-            user_input = input("Roll or hold? (r/h): ")
-            if user_input.lower() == 'r':
-                self.roll_die()
+        self.__isTurnOver = False
+        print("\nTURN", self.__turn)
+        while not self.__isTurnOver:
+            user_input = input("Roll or hold (r/h): ")
+            if user_input == "r":
+                self.roll()
+            elif user_input == "h":
+                self.hold()
             else:
-                self.hold_turn()
+                print("Invalid input")
+        print("Score for turn: ", self.__turnScore)
+        print("Total score: ", self.__score)
+        self.__turnScore = 0
 
-    def roll_die(self):
+    def roll(self):
         self.__die.roll()
-        print("Die: ", self.__die.get_value)
-        if self.__die.get_value == 1:
-            self.__isTurnOver = True
+        value = self.__die.get_value
+        print("Die: ", value)
+        if value == 1:
             self.__turnScore = 0
             self.__turn += 1
-            print("This turn is over, you lost your points. \n")
+            self.__isTurnOver = True
         else:
-            self.__turnScore += self.__die.get_value
+            self.__turnScore += value
 
-    def hold_turn(self):
-        self.__totalScore += self.__turnScore
-        print("Score for turn: ", self.__turnScore)
-        print("Total score: ", self.__totalScore)
-        print()
-        if self.__totalScore > 20:
+    def hold(self):
+        self.__score += self.__turnScore
+        self.__isTurnOver = True
+        self.__turn += 1
+        if self.__score > 21:
             self.__isGameOver = True
-            print("You finished in 2 turns!")
-        else:
-            self.__turn += 1
+            print("\nYou finished in", self.__turn, "turns!")
+
 
