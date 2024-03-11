@@ -3,7 +3,7 @@ import sqlite3
 conn = sqlite3.connect('Movies.sqlite')
 
 c = conn.cursor()
-query = """CREATE TABLE IF NOT EXISTS Movies 
+query = """CREATE TABLE if NOT EXISTS Movies 
             (id INTEGER PRIMARY KEY,
             title VARCHAR(30),
             release_year INT,
